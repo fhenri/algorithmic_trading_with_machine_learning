@@ -1,0 +1,52 @@
+
+[MACOS HOST]
+$ cd /Users/fhenri/project/finance/algorithmic_trading_with_machine_learning
+
+$ source .devhere.sh
+$ docker run -it -v $(pwd):/home/manning/liveproject -p 8888:8888 -e QUANDL_API_KEY=$QUANDL_API_KEY --name liveproject appliedai/manning:liveproject bash
+$ docker start -a -i  liveproject
+
+$ docker inspect liveproject
+$ docker stats
+
+[DOCKER CONTAINER]
+$ /home/manning/liveproject
+
+$ conda env list
+# conda environments:
+#
+base                  *  /opt/conda
+liveproject              /opt/conda/envs/liveproject
+liveproject-zipline      /opt/conda/envs/liveproject-zipline
+
+$ conda activate <env_name>
+
+alias lab='jupyter lab --ip 0.0.0.0 --no-browser'       (most recent interface)
+alias nb ='jupyter notebook --ip 0.0.0.0 --no-browser'  (traditional interface)
+
+$ conda activate liveproject-zipline
+$ zipline ingest
+--> creates .zipline directory with quandl data
+$ zipline bundles
+--> display ingest history
+
+# Fix data from db
+$ find . -name assets-7.sqlite
+$ sqlite3 "./.zipline/data/quandl/2021-03-25T15;48;01.141720/assets-7.sqlite"
+
+sqlite> select * from exchanges;
+QUANDL|QUANDL|??
+sqlite> .schema exchanges
+CREATE TABLE exchanges (
+  exchange TEXT NOT NULL,
+  canonical_name TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  PRIMARY KEY (exchange),
+  UNIQUE (exchange)
+);
+sqlite> update exchanges set country_code = 'US' where canonical_name = 'QUANDL';
+sqlite> select * from exchanges;
+QUANDL|QUANDL|US
+sqlite> .quit
+
+$ 
